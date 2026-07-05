@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DESIRE.co</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --cream: #FAF7F2;
+        --brown-dark: #2C1810;
+        --brown-mid: #6B3F2A;
+        --gold: #C9A96E;
+        --gold-light: #E8D5B0;
+        --white: #FFFFFF;
+        --gray-light: #F5F2ED;
+        --text-muted: #8B7355;
+        --green-ok: #2a7a4b;
+      }
+      * { box-sizing: border-box; }
+      body { font-family: 'Lato', sans-serif; background-color: var(--cream); color: var(--brown-dark); margin: 0; }
+
+      /* ── NAVBAR ── */
+      .navbar-desire {
+        background: var(--white); padding: 1.2rem 2.5rem;
+        display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px solid var(--gold-light);
+        position: sticky; top: 0; z-index: 200;
+        box-shadow: 0 2px 12px rgba(44,24,16,0.06);
+      }
+      .brand { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; letter-spacing: 0.18em; color: var(--brown-dark); text-decoration: none; }
+      .brand span { color: var(--gold); }
+      .nav-links { list-style: none; margin: 0; padding: 0; display: flex; gap: 2.2rem; }
+      .nav-links a { text-decoration: none; color: var(--brown-mid); font-weight: 700; font-size: 0.82rem; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; }
+      .nav-links a:hover { color: var(--gold); }
+      .nav-right { display: flex; align-items: center; gap: 1rem; }
+      .nav-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--brown-dark); }
+
+      /* ── KERANJANG ICON ── */
+      .cart-btn {
+        background: none; border: none; cursor: pointer; position: relative;
+        padding: 0.3rem 0.5rem; color: var(--brown-dark);
+      }
+      .cart-btn svg { width: 26px; height: 26px; }
+      .cart-badge {
+        position: absolute; top: -4px; right: -4px;
+        background: var(--gold); color: var(--brown-dark);
+        font-size: 0.65rem; font-weight: 700;
+        width: 18px; height: 18px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        display: none;
+      }
+      .cart-badge.show { display: flex; }
+
+      /* ── HERO ── */
+      .hero {
+        position: relative; height: 78vh; min-height: 480px;
+        background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown-mid) 100%);
+        display: flex; align-items: center; justify-content: center; text-align: center; overflow: hidden;
+      }
+      .hero::before {
+        content: ''; position: absolute; inset: 0;
+        background-image: url('images/banner.jpg'); background-size: cover; background-position: center; opacity: 0.25;
+      }
+      .hero-bg-text {
+        position: absolute; font-family: 'Playfair Display', serif; font-size: 22vw; font-weight: 700;
+        color: rgba(255,255,255,0.04); user-select: none; pointer-events: none; line-height: 1;
+        top: 50%; left: 50%; transform: translate(-50%, -50%); white-space: nowrap;
+      }
+      .hero-content { position: relative; z-index: 2; padding: 2rem; }
+      .hero-eyebrow { font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.1rem; font-weight: 700; }
+      .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 6vw, 4.5rem); color: var(--white); line-height: 1.12; margin-bottom: 1.2rem; font-weight: 400; }
+      .hero-title em { font-style: italic; color: var(--gold); }
+      .hero-sub { color: rgba(255,255,255,0.7); font-size: 1rem; font-weight: 300; max-width: 460px; margin: 0 auto 2rem; line-height: 1.7; }
+      .btn-hero { background: var(--gold); color: var(--brown-dark); font-weight: 700; font-size: 0.82rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 0.85rem 2.2rem; border: none; text-decoration: none; display: inline-block; transition: background 0.2s, transform 0.2s; }
+      .btn-hero:hover { background: var(--gold-light); transform: translateY(-2px); color: var(--brown-dark); }
+
+      /* ── CATALOGUE ── */
+      .section-catalogue { padding: 5rem 3rem; background: var(--white); }
+      .section-eyebrow { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); font-weight: 700; display: block; margin-bottom: 0.5rem; text-align: center; }
+      .section-title { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; text-align: center; color: var(--brown-dark); margin-bottom: 0.6rem; }
+      .section-desc { text-align: center; color: var(--text-muted); font-weight: 300; max-width: 480px; margin: 0 auto 3rem; line-height: 1.75; font-size: 0.97rem; }
+
+      /* ── KARTU PRODUK ── */
+      .book-card { border: none; border-radius: 0; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; background: var(--white); box-shadow: 0 2px 16px rgba(44,24,16,0.08); cursor: pointer; }
+      .book-card:hover { transform: translateY(-6px); box-shadow: 0 10px 32px rgba(44,24,16,0.14); }
+      .book-card img { width: 100%; height: 240px; object-fit: cover; display: block; transition: transform 0.4s; background: var(--gray-light); }
+      .book-card:hover img { transform: scale(1.04); }
+      .card-img-wrapper { overflow: hidden; position: relative; }
+      .card-overlay { position: absolute; inset: 0; background: rgba(44,24,16,0.55); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+      .book-card:hover .card-overlay { opacity: 1; }
+      .btn-detail-overlay { color: var(--white); border: 1.5px solid var(--gold); padding: 0.55rem 1.5rem; font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; text-decoration: none; transition: background 0.2s; background: transparent; cursor: pointer; }
+      .btn-detail-overlay:hover { background: var(--gold); color: var(--brown-dark); }
+      .book-card .card-body { padding: 1rem 1.1rem 0.6rem; }
+      .book-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.2rem; }
+      .book-desc { font-size: 0.83rem; color: var(--text-muted); font-weight: 300; line-height: 1.55; margin-bottom: 0; }
+      .book-card .card-footer { background: var(--gray-light); border-top: 1px solid var(--gold-light); padding: 0.75rem 1.1rem; display: flex; align-items: center; justify-content: space-between; }
+      .btn-cart {
+        background: var(--brown-dark); border: none; color: var(--white);
+        font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+        font-weight: 700; padding: 0.4rem 0.9rem; cursor: pointer;
+        transition: background 0.2s, transform 0.15s; display: flex; align-items: center; gap: 0.4rem;
+      }
+      .btn-cart:hover { background: var(--gold); color: var(--brown-dark); }
+      .btn-cart.added { background: var(--green-ok); animation: pulse 0.3s; }
+      @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+      .harga { font-family: 'Playfair Display', serif; color: var(--gold); font-weight: 700; font-size: 1rem; }
+
+      /* ── MODAL UMUM (DESIRE) ── */
+      .modal-desire .modal-content { border: none; border-radius: 0; }
+      .modal-desire .modal-header { background: var(--brown-dark); color: var(--white); border: none; padding: 1.2rem 1.5rem; }
+      .modal-desire .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; }
+      .modal-desire .btn-close { filter: invert(1); }
+      .modal-desire .modal-body { padding: 1.5rem; }
+      .modal-img { width: 100%; height: 280px; object-fit: cover; background: var(--gray-light); }
+      .modal-book-name { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 0.3rem; }
+      .modal-genre { color: var(--text-muted); font-size: 0.83rem; margin-bottom: 1rem; }
+      .modal-price { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem; }
+      .modal-desc { color: var(--brown-mid); font-size: 0.93rem; line-height: 1.75; font-weight: 300; }
+      .qty-control { display: flex; align-items: center; gap: 0.6rem; margin: 1.2rem 0; }
+      .qty-btn { width: 32px; height: 32px; border: 1.5px solid var(--gold-light); background: none; color: var(--brown-dark); font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+      .qty-btn:hover { background: var(--gold-light); }
+      .qty-num { font-weight: 700; font-size: 1rem; min-width: 24px; text-align: center; }
+      .btn-add-cart-modal { width: 100%; background: var(--brown-dark); color: var(--white); border: none; padding: 0.85rem; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+      .btn-add-cart-modal:hover { background: var(--gold); color: var(--brown-dark); }
+
+      /* ── CART PANEL ── */
+      .cart-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+        z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+      }
+      .cart-overlay.open { opacity: 1; pointer-events: all; }
+      .cart-panel {
+        position: fixed; top: 0; right: -420px; width: 100%; max-width: 400px; height: 100%;
+        background: var(--white); z-index: 301; display: flex; flex-direction: column;
+        transition: right 0.35s cubic-bezier(.4,0,.2,1);
+        box-shadow: -4px 0 32px rgba(44,24,16,0.18);
+      }
+      .cart-panel.open { right: 0; }
+      .cart-header { background: var(--brown-dark); color: var(--white); padding: 1.2rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+      .cart-header h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin: 0; }
+      .cart-close { background: none; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; line-height: 1; }
+      .cart-body { flex: 1; overflow-y: auto; padding: 1.2rem 1.5rem; }
+      .cart-empty { text-align: center; color: var(--text-muted); padding: 3rem 1rem; }
+      .cart-empty svg { width: 56px; height: 56px; margin-bottom: 1rem; opacity: 0.3; }
+      .cart-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--gold-light); align-items: flex-start; }
+      .cart-item-img { width: 64px; height: 80px; object-fit: cover; background: var(--gray-light); flex-shrink: 0; }
+      .cart-item-info { flex: 1; }
+      .cart-item-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.15rem; }
+      .cart-item-price { color: var(--gold); font-weight: 700; font-size: 0.9rem; }
+      .cart-item-qty { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+      .cart-qty-btn { width: 26px; height: 26px; border: 1px solid var(--gold-light); background: none; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+      .cart-qty-btn:hover { background: var(--gold-light); }
+      .cart-qty-num { font-size: 0.88rem; font-weight: 700; min-width: 20px; text-align: center; }
+      .cart-item-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; padding: 0; transition: color 0.15s; }
+      .cart-item-remove:hover { color: #c0392b; }
+      .cart-footer { padding: 1.2rem 1.5rem; border-top: 2px solid var(--gold-light); }
+      .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+      .cart-total-label { font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+      .cart-total-price { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--brown-dark); }
+      .btn-checkout { width: 100%; background: var(--gold); color: var(--brown-dark); border: none; padding: 1rem; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+      .btn-checkout:hover { background: var(--gold-light); }
+
+      /* ── CHECKOUT FORM ── */
+      .checkout-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; display: block; }
+      .checkout-input, .checkout-textarea {
+        width: 100%; border: 1.5px solid var(--gold-light); background: var(--gray-light);
+        padding: 0.7rem 0.9rem; font-size: 0.92rem; font-family: 'Lato', sans-serif;
+        color: var(--brown-dark); margin-bottom: 1.1rem; transition: border-color 0.2s;
+      }
+      .checkout-input:focus, .checkout-textarea:focus { outline: none; border-color: var(--gold); background: var(--white); }
+      .checkout-textarea { resize: vertical; min-height: 70px; }
+      .checkout-section-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.05rem; margin: 0.3rem 0 0.9rem; color: var(--brown-dark); }
+      .checkout-divider { border: none; border-top: 1px solid var(--gold-light); margin: 1.4rem 0; }
+
+      .payment-methods { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.7rem; margin-bottom: 1.1rem; }
+      .payment-card {
+        border: 1.5px solid var(--gold-light); padding: 0.9rem 0.7rem; text-align: center;
+        cursor: pointer; transition: border-color 0.2s, background 0.2s; background: var(--white);
+      }
+      .payment-card:hover { border-color: var(--gold); }
+      .payment-card.selected { border-color: var(--gold); background: var(--gray-light); box-shadow: inset 0 0 0 1px var(--gold); }
+      .payment-icon { font-size: 1.5rem; margin-bottom: 0.3rem; display: block; }
+      .payment-name { font-size: 0.8rem; font-weight: 700; color: var(--brown-dark); }
+
+      .payment-detail-box {
+        background: var(--gray-light); border-left: 4px solid var(--gold);
+        padding: 0.9rem 1.1rem; font-size: 0.85rem; color: var(--brown-mid); line-height: 1.6;
+        margin-bottom: 1.1rem; display: none;
+      }
+      .payment-detail-box.show { display: block; }
+      .payment-detail-box strong { color: var(--brown-dark); }
+      .copy-btn { background: none; border: 1px solid var(--gold); color: var(--brown-dark); font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.6rem; margin-left: 0.5rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: background 0.15s; }
+      .copy-btn:hover { background: var(--gold-light); }
+
+      .checkout-summary { background: var(--gray-light); padding: 1rem 1.1rem; margin-bottom: 1.1rem; font-size: 0.87rem; }
+      .checkout-summary-row { display: flex; justify-content: space-between; padding: 0.3rem 0; color: var(--brown-mid); }
+      .checkout-summary-row.total { border-top: 1.5px solid var(--gold-light); margin-top: 0.4rem; padding-top: 0.6rem; font-weight: 700; color: var(--brown-dark); font-size: 0.98rem; }
+
+      .btn-confirm-order { width: 100%; background: var(--brown-dark); color: var(--white); border: none; padding: 0.95rem; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+      .btn-confirm-order:hover { background: var(--gold); color: var(--brown-dark); }
+      .btn-confirm-order:disabled { opacity: 0.5; cursor: not-allowed; }
+      .checkout-error { color: #c0392b; font-size: 0.8rem; margin: -0.6rem 0 1rem; display: none; }
+      .checkout-error.show { display: block; }
+
+      /* ── PROSES / SUKSES PEMBAYARAN ── */
+      .payment-processing { text-align: center; padding: 2.5rem 1rem; }
+      .spinner-gold { width: 52px; height: 52px; border: 4px solid var(--gold-light); border-top-color: var(--gold); border-radius: 50%; margin: 0 auto 1.3rem; animation: spin 0.8s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .payment-processing p { color: var(--text-muted); font-size: 0.92rem; }
+
+      .success-check {
+        width: 70px; height: 70px; border-radius: 50%; background: var(--green-ok);
+        display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem;
+        animation: popIn 0.4s cubic-bezier(.4,0,.2,1);
+      }
+      @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+      .success-check svg { width: 34px; height: 34px; stroke: white; }
+      .success-title { text-align: center; font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 0.3rem; }
+      .success-sub { text-align: center; color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.5rem; }
+      .success-order-id { text-align: center; font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); font-weight: 700; letter-spacing: 0.05em; margin-bottom: 1.5rem; }
+      .success-box { background: var(--gray-light); padding: 1rem 1.1rem; font-size: 0.85rem; margin-bottom: 1.2rem; }
+      .success-box-row { display: flex; justify-content: space-between; padding: 0.25rem 0; color: var(--brown-mid); }
+      .success-box-row span:first-child { color: var(--text-muted); }
+      .success-box-row.total { border-top: 1.5px solid var(--gold-light); margin-top: 0.4rem; padding-top: 0.6rem; font-weight: 700; color: var(--brown-dark); }
+      .btn-success-wa { width: 100%; background: #25D366; color: white; border: none; padding: 0.9rem; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; margin-bottom: 0.7rem; transition: opacity 0.2s; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+      .btn-success-wa:hover { opacity: 0.9; }
+      .btn-success-close { width: 100%; background: none; border: 1.5px solid var(--gold-light); color: var(--brown-dark); padding: 0.85rem; font-weight: 700; font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+      .btn-success-close:hover { background: var(--gray-light); }
+
+      /* ── TOAST ── */
+      .toast-cart {
+        position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px);
+        background: var(--brown-dark); color: var(--white);
+        padding: 0.75rem 1.5rem; font-size: 0.88rem; font-weight: 700;
+        z-index: 500; transition: transform 0.3s; white-space: nowrap;
+        border-left: 4px solid var(--gold);
+      }
+      .toast-cart.show { transform: translateX(-50%) translateY(0); }
+
+      /* ── TENTANG KAMI ── */
+      .section-tentang { background: var(--brown-dark); padding: 5rem 3rem; }
+      .tentang-inner { max-width: 820px; margin: 0 auto; display: flex; gap: 3rem; align-items: flex-start; }
+      .tentang-img { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 3px solid var(--gold); flex-shrink: 0; background: var(--brown-mid); }
+      .tentang-text .section-eyebrow { text-align: left; }
+      .tentang-text .section-title { text-align: left; color: var(--white); font-size: 1.9rem; }
+      .tentang-text p { color: rgba(255,255,255,0.7); font-weight: 300; line-height: 1.85; font-size: 0.97rem; text-align: left; }
+
+      /* ── CARA ORDER ── */
+      .section-order { background: var(--cream); padding: 5rem 3rem; }
+      .order-steps { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; }
+      .step-card { flex: 1 1 200px; max-width: 230px; text-align: center; padding: 1.8rem 1.2rem; background: var(--white); box-shadow: 0 2px 14px rgba(44,24,16,0.07); transition: transform 0.2s; }
+      .step-card:hover { transform: translateY(-4px); }
+      .step-num { font-family: 'Playfair Display', serif; font-size: 2.8rem; color: var(--gold-light); font-weight: 700; line-height: 1; margin-bottom: 0.6rem; }
+      .step-title { font-weight: 700; font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brown-dark); margin-bottom: 0.5rem; }
+      .step-desc { font-size: 0.83rem; color: var(--text-muted); font-weight: 300; line-height: 1.65; }
+
+      /* ── INFO KONTAK / SOSIAL MEDIA ── */
+      .section-kontak { background: var(--white); padding: 4.5rem 3rem; border-top: 1px solid var(--gold-light); }
+      .kontak-inner { max-width: 620px; margin: 0 auto; text-align: center; }
+      .kontak-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-top: 2rem; }
+      .kontak-card {
+        display: flex; align-items: center; gap: 0.7rem; background: var(--gray-light);
+        padding: 0.9rem 1.5rem; text-decoration: none; color: var(--brown-dark);
+        border: 1.5px solid var(--gold-light); transition: border-color 0.2s, background 0.2s;
+        font-weight: 700; font-size: 0.88rem;
+      }
+      .kontak-card:hover { border-color: var(--gold); background: var(--white); color: var(--brown-dark); }
+      .kontak-card svg { width: 22px; height: 22px; flex-shrink: 0; }
+      .kontak-sub { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; display: block; }
+
+      /* ── FOOTER ── */
+      .footer { background: var(--brown-dark); color: rgba(255,255,255,0.5); text-align: center; padding: 1.6rem; font-size: 0.82rem; letter-spacing: 0.05em; border-top: 2px solid var(--gold); }
+      .footer span { color: var(--gold); }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 767px) {
+        .navbar-desire { padding: 1rem 1.2rem; }
+        .nav-links { display: none; flex-direction: column; gap: 1rem; position: absolute; top: 100%; left: 0; right: 0; background: var(--white); padding: 1rem 1.5rem; border-bottom: 1px solid var(--gold-light); }
+        .nav-links.open { display: flex; }
+        .nav-toggle { display: block; }
+        .tentang-inner { flex-direction: column; align-items: center; text-align: center; }
+        .tentang-text .section-eyebrow, .tentang-text .section-title, .tentang-text p { text-align: center; }
+        .section-catalogue, .section-tentang, .section-order, .section-kontak { padding: 3rem 1.2rem; }
+        .cart-panel { max-width: 100%; }
+        .payment-methods { grid-template-columns: repeat(2, 1fr); }
+        .kontak-links { flex-direction: column; align-items: stretch; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar-desire">
+      <a href="#" class="brand">DESIRE.co<span></span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#koleksi">Produk</a></li>
+        <li><a href="#tentang">Tentang Kami</a></li>
+        <li><a href="#order">Cara Order</a></li>
+        <li><a href="#kontak">Kontak</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="cart-btn" id="cartBtn" title="Keranjang Belanja">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+        <button class="nav-toggle" id="navToggle">&#9776;</button>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg-text">D</div>
+      <div class="hero-content">
+        <p class="hero-eyebrow">Koleksi Terbaik 2026</p>
+        <h1 class="hero-title">Temukan Baju<br>di <em>DESIRE.co</em></h1>
+        <p class="hero-sub">Pilih baju terbaik dengan design yang menarik hanya di brand DESIRE.co.</p>
+        <a href="#koleksi" class="btn-hero">Lihat Koleksi</a>
+      </div>
+    </section>
+
+    <!-- CATALOGUE -->
+    <section class="section-catalogue" id="koleksi">
+      <span class="section-eyebrow">Our Collection</span>
+      <h2 class="section-title">T-shirt pilihan kami</h2>
+      <p class="section-desc">Beberapa deign dibuat dari gambar gambar saya pribadi</p>
+
+      <div class="row row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4" id="bookGrid"></div>
+    </section>
+
+    <!-- TENTANG KAMI -->
+    <section class="section-tentang" id="tentang">
+      <div class="tentang-inner">
+        <img src="images/about-us.png" alt="Tentang Desire" class="tentang-img">
+        <div class="tentang-text">
+          <span class="section-eyebrow">About Us</span>
+          <h2 class="section-title">Tentang Kami</h2>
+          <p>DESIRE adalah toko T-shirt terbaik dengan design yang menarik dan beberapa design dibuat dari gambar gambar saya pribadi untuk menciptakan ciri khas tersendiri tentunya beda dengan brand yang lain.</p>
+          <p>Dengan koleksi yang terus diperbarui dan layanan yang bersahabat, kami berkomitmen untuk menjadi teman setia dalam pencarian T-shirt terbaik.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARA ORDER -->
+    <section class="section-order" id="order">
+      <span class="section-eyebrow">How To Order</span>
+      <h2 class="section-title">Cara Order</h2>
+      <p class="section-desc">Mudah, cepat, dan terpercaya. Dapatkan T-shirt pilihan Anda hanya dalam beberapa langkah.</p>
+      <div class="order-steps">
+        <div class="step-card"><div class="step-num">01</div><p class="step-title">Pilih T-shirt</p><p class="step-desc">Telusuri koleksi kami dan klik tombol detail untuk informasi lengkap.</p></div>
+        <div class="step-card"><div class="step-num">02</div><p class="step-title">Tambah Keranjang</p><p class="step-desc">Klik "Tambah ke Keranjang" pada T-shirt pilihan Anda.</p></div>
+        <div class="step-card"><div class="step-num">03</div><p class="step-title">Isi Alamat &amp; Bayar</p><p class="step-desc">Isi data alamat pengiriman dan pilih metode pembayaran favoritmu.</p></div>
+        <div class="step-card"><div class="step-num">04</div><p class="step-title">Terima Paket</p><p class="step-desc">T-shirt dikirim ke alamat Anda dengan aman dan terpercaya.</p></div>
+      </div>
+    </section>
+
+    <!-- KONTAK / SOSIAL MEDIA -->
+    <section class="section-kontak" id="kontak">
+      <div class="kontak-inner">
+        <span class="section-eyebrow">Stay Connected</span>
+        <h2 class="section-title">Hubungi &amp; Ikuti Kami</h2>
+        <p class="section-desc">Ada pertanyaan seputar pesanan atau ingin lihat rekomendasi T-shirt terbaru? Sapa kami lewat kanal berikut.</p>
+        <div class="kontak-links">
+          <a href="https://wa.me/6281234567890" target="_blank" class="kontak-card">
+            <svg viewBox="0 0 24 24" fill="#25D366"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.74 13.4L3 21l3.72-1.29a8.9 8.9 0 0 0 5.33 1.7h.01a8.94 8.94 0 0 0 5.54-15.09Zm-5.55 13.7h-.01a7.42 7.42 0 0 1-3.77-1.03l-.27-.16-2.8.97.94-2.72-.18-.28a7.44 7.44 0 0 1 11.55-9.2 7.4 7.4 0 0 1 2.18 5.27 7.44 7.44 0 0 1-7.64 7.15Zm4.08-5.57c-.22-.11-1.31-.65-1.51-.72-.2-.08-.35-.11-.5.11-.15.22-.57.72-.7.87-.13.15-.26.16-.48.05-.22-.11-1.31-.62-1.9-1.44-.7-.99-.86-1.06-.42-1.06.15 0 .43-.16.7-.42.27-.27.35-.44.19-.66-.16-.22-.65-1.55-.9-2.13-.19-.44-.4-.38-.55-.38-.14 0-.31 0-.48.02-.16.02-.42.09-.63.31-.22.24-.83.83-.83 2 0 1.18.86 2.32.98 2.48.12.16 1.63 2.5 3.98 3.4 2.35.9 2.35.6 2.77.56.42-.04 1.31-.53 1.5-1.05.19-.51.19-.94.13-1.05-.05-.1-.2-.16-.42-.27Z"/></svg>
+            <span>WhatsApp<span class="kontak-sub">+62 888 0233 8141</span></span>
+          </a>
+          <a href="https://instagram.com/desire.bookstore" target="_blank" class="kontak-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1"/></svg>
+            <span>Instagram<span class="kontak-sub">@DESIRE.co</span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">&copy; 2026 <span>DESIRE.co</span> — Semua hak dilindungi</footer>
+
+    <!-- MODAL DETAIL PRODUK -->
+    <div class="modal fade modal-desire" id="detailModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Detail Produk</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-4">
+              <div class="col-md-5">
+                <img id="modalImg" src="" alt="" class="modal-img">
+              </div>
+              <div class="col-md-7">
+                <p class="modal-book-name" id="modalName"></p>
+                <p class="modal-genre" id="modalGenre"></p>
+                <p class="modal-price" id="modalPrice"></p>
+                <p class="modal-desc" id="modalDesc"></p>
+                <div class="qty-control">
+                  <button class="qty-btn" id="qtyMinus">−</button>
+                  <span class="qty-num" id="qtyNum">1</span>
+                  <button class="qty-btn" id="qtyPlus">+</button>
+                  <span style="font-size:0.82rem;color:var(--text-muted);margin-left:0.3rem">pcs</span>
+                </div>
+                <button class="btn-add-cart-modal" id="modalAddCart">+ Tambah ke Keranjang</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CART PANEL -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-panel" id="cartPanel">
+      <div class="cart-header">
+        <h2>🛒 Keranjang Belanja</h2>
+        <button class="cart-close" id="cartClose">&times;</button>
+      </div>
+      <div class="cart-body" id="cartBody">
+        <div class="cart-empty" id="cartEmpty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <p>Keranjang masih kosong.<br>Yuk pilih T-shirt favoritmu!</p>
+        </div>
+      </div>
+      <div class="cart-footer" id="cartFooter" style="display:none">
+        <div class="cart-total-row">
+          <span class="cart-total-label">Total</span>
+          <span class="cart-total-price" id="cartTotal">Rp 0</span>
+        </div>
+        <button class="btn-checkout" id="btnCheckout">Lanjut ke Pembayaran</button>
+      </div>
+    </div>
+
+    <!-- MODAL CHECKOUT: ALAMAT + METODE PEMBAYARAN -->
+    <div class="modal fade modal-desire" id="checkoutModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Checkout Pesanan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+
+            <!-- STEP: FORM -->
+            <div id="checkoutFormStep">
+              <p class="checkout-section-title">📍 Alamat Pengiriman</p>
+              <label class="checkout-label">Nama Penerima</label>
+              <input type="text" class="checkout-input" id="inputNama" placeholder="Contoh: Laee Fadillah">
+
+              <label class="checkout-label">No. WhatsApp</label>
+              <input type="tel" class="checkout-input" id="inputTelepon" placeholder="Contoh: 0812xxxxxxx">
+
+              <label class="checkout-label">Alamat Lengkap</label>
+              <textarea class="checkout-textarea" id="inputAlamat" placeholder="Nama jalan, no. rumah, RT/RW, kelurahan, kecamatan, kota, kode pos"></textarea>
+
+              <p class="checkout-error" id="checkoutError">Mohon lengkapi semua data alamat sebelum melanjutkan.</p>
+
+              <hr class="checkout-divider">
+
+              <p class="checkout-section-title">💳 Metode Pembayaran</p>
+              <div class="payment-methods" id="paymentMethods">
+                <div class="payment-card" data-method="seabank">
+                  <span class="payment-icon">🏦</span>
+                  <span class="payment-name">SeaBank</span>
+                </div>
+                <div class="payment-card" data-method="dana">
+                  <span class="payment-icon">💠</span>
+                  <span class="payment-name">DANA</span>
+                </div>
+                <div class="payment-card" data-method="gopay">
+                  <span class="payment-icon">🟢</span>
+                  <span class="payment-name">GoPay</span>
+                </div>
+                <div class="payment-card" data-method="cod">
+                  <span class="payment-icon">📦</span>
+                  <span class="payment-name">COD</span>
+                </div>
+              </div>
+
+              <div class="payment-detail-box" id="paymentDetailBox"></div>
+
+              <div class="checkout-summary" id="checkoutSummary"></div>
+
+              <button class="btn-confirm-order" id="btnConfirmOrder">Konfirmasi &amp; Bayar Sekarang</button>
+            </div>
+
+            <!-- STEP: PROSES PEMBAYARAN -->
+            <div id="checkoutProcessStep" style="display:none">
+              <div class="payment-processing">
+                <div class="spinner-gold"></div>
+                <p>Memproses pembayaranmu, mohon tunggu sebentar...</p>
+              </div>
+            </div>
+
+            <!-- STEP: SUKSES -->
+            <div id="checkoutSuccessStep" style="display:none">
+              <div class="success-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+              </div>
+              <p class="success-title">Pembayaran Berhasil!</p>
+              <p class="success-sub">Terima kasih, pesananmu sedang kami siapkan.</p>
+              <p class="success-order-id" id="successOrderId"></p>
+              <div class="success-box" id="successBox"></div>
+              <button class="btn-success-wa" id="btnSuccessWA">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.74 13.4L3 21l3.72-1.29a8.9 8.9 0 0 0 5.33 1.7h.01a8.94 8.94 0 0 0 5.54-15.09Z"/></svg>
+                Konfirmasi via WhatsApp
+              </button>
+              <button class="btn-success-close" data-bs-dismiss="modal">Tutup</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-cart" id="toastCart"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // ── DATA BUKU ──
+      const books = [
+        { id:1, name:"DESIRE.co",  genre:"Design by m.laesa.razzaq (owner brand)",   price:150000, img:"images/baju1.jpg", desc:"Design ini terinpirasi dari petinju legendaris yaitu MIKE TYSON,terus saya edit menggunakan aplikasi canva dan saya jadikan design brand saya." },
+        { id:2, name:"DESIRE.co",    genre:"Design by m.laesa.razzaq (owner brand)",  price:150000, img:"images/baju2.jpg", desc:"Design ini dibuat dari gambar saya pribadi,gambar itu sendiri terinpirasi dari gambar orang lain yang lewat ke beranda tiktok saya lalu saya tiru, lalu saya jadikan sebuah design " },
+        { id:3, name:"DESIRE.co",   genre:"Design by m.laesa.razzaq (owner brand)",  price:150000, img:"images/baju3.jpg", desc:"Design ini dibuat menggunakan aplikasi canva yang terinspirasi dari sosok manusia berkepala domba.Lalu saya jadikan sebuah design." },
+        { id:4, name:"DESIRE.co",  genre:"Design by m.laesa.razzaq (owner brand)",    price:150000, img:"images/baju4.jpg", desc:"Design ini dibuat dari gambar saya pribadi yang terinspirasi dari sebuah lirik lagu yang berjudul letdown dari radiohead." },
+        { id:5, name:"DESIRE.co",   genre:"Design by m.laesa.razzaq (owner brand)",       price:150000, img:"images/baju5.jpg", desc:"Design ini dibuat menggunakan aplikasi canva yang terinspirasi dari sosok manusia berkepala domba.Lalu saya jadikan sebuah design." },
+        { id:6, name:"DESIRE.co",   genre:"Design by m.laesa.razzaq (owner brand)",           price:150000, img:"images/baju6.jpg", desc:"Design ini dibuat dari gambar saya pribadi yang saya liat dari beranda intagram dan saya tiru gambarnya lalu dibuatkan design." },
+      ];
+
+      // ── RENDER BUKU ──
+      const grid = document.getElementById('bookGrid');
+      books.forEach(b => {
+        grid.innerHTML += `
+        <div class="col">
+          <div class="book-card card h-100">
+            <div class="card-img-wrapper">
+              <img src="${b.img}" alt="${b.name}" loading="lazy">
+              <div class="card-overlay">
+                <button class="btn-detail-overlay" onclick="openDetail(${b.id})">Lihat Detail</button>
+              </div>
+            </div>
+            <div class="card-body" onclick="openDetail(${b.id})" style="cursor:pointer">
+              <p class="book-name">${b.name}</p>
+              <p class="book-desc">${b.genre}</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn-cart" onclick="addToCart(${b.id},1,this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Tambah
+              </button>
+              <span class="harga">Rp ${b.price.toLocaleString('id-ID')}</span>
+            </div>
+          </div>
+        </div>`;
+      });
+
+      // ── CART STATE ──
+      let cart = [];
+
+      function addToCart(id, qty, btnEl) {
+        const book = books.find(b => b.id === id);
+        const existing = cart.find(c => c.id === id);
+        if (existing) {
+          existing.qty += qty;
+        } else {
+          cart.push({ ...book, qty });
+        }
+        updateCartUI();
+        if (btnEl) {
+          btnEl.textContent = '✓ Ditambahkan';
+          btnEl.classList.add('added');
+          setTimeout(() => {
+            btnEl.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Tambah`;
+            btnEl.classList.remove('added');
+          }, 1200);
+        }
+        showToast(`"${book.name}" ditambahkan ke keranjang`);
+      }
+
+      function updateCartUI() {
+        const total = cart.reduce((s, c) => s + c.qty, 0);
+        const badge = document.getElementById('cartBadge');
+        badge.textContent = total;
+        badge.classList.toggle('show', total > 0);
+        renderCartItems();
+      }
+
+      function renderCartItems() {
+        const body = document.getElementById('cartBody');
+        const footer = document.getElementById('cartFooter');
+        const empty = document.getElementById('cartEmpty');
+        if (cart.length === 0) {
+          empty.style.display = 'block';
+          footer.style.display = 'none';
+          [...body.children].forEach(el => { if (el !== empty) el.remove(); });
+          return;
+        }
+        empty.style.display = 'none';
+        footer.style.display = 'block';
+        [...body.children].forEach(el => { if (el !== empty) el.remove(); });
+        cart.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'cart-item';
+          div.innerHTML = `
+            <img src="${item.img}" alt="${item.name}" class="cart-item-img">
+            <div class="cart-item-info">
+              <p class="cart-item-name">${item.name}</p>
+              <p class="cart-item-price">Rp ${item.price.toLocaleString('id-ID')}</p>
+              <div class="cart-item-qty">
+                <button class="cart-qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+                <span class="cart-qty-num">${item.qty}</span>
+                <button class="cart-qty-btn" onclick="changeQty(${item.id},1)">+</button>
+              </div>
+            </div>
+            <button class="cart-item-remove" onclick="removeItem(${item.id})" title="Hapus">✕</button>`;
+          body.appendChild(div);
+        });
+        const grandTotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+        document.getElementById('cartTotal').textContent = 'Rp ' + grandTotal.toLocaleString('id-ID');
+      }
+
+      function changeQty(id, delta) {
+        const item = cart.find(c => c.id === id);
+        if (!item) return;
+        item.qty += delta;
+        if (item.qty <= 0) removeItem(id);
+        else updateCartUI();
+      }
+
+      function removeItem(id) {
+        cart = cart.filter(c => c.id !== id);
+        updateCartUI();
+      }
+
+      // ── CART PANEL TOGGLE ──
+      const cartBtn = document.getElementById('cartBtn');
+      const cartPanel = document.getElementById('cartPanel');
+      const cartOverlay = document.getElementById('cartOverlay');
+      const cartClose = document.getElementById('cartClose');
+
+      function openCart() { cartPanel.classList.add('open'); cartOverlay.classList.add('open'); }
+      function closeCart() { cartPanel.classList.remove('open'); cartOverlay.classList.remove('open'); }
+
+      cartBtn.addEventListener('click', openCart);
+      cartClose.addEventListener('click', closeCart);
+      cartOverlay.addEventListener('click', closeCart);
+
+      // ── MODAL DETAIL ──
+      let modalQty = 1;
+      let currentModalId = null;
+      const detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+
+      function openDetail(id) {
+        const b = books.find(x => x.id === id);
+        if (!b) return;
+        currentModalId = id;
+        modalQty = 1;
+        document.getElementById('modalImg').src = b.img;
+        document.getElementById('modalImg').alt = b.name;
+        document.getElementById('modalName').textContent = b.name;
+        document.getElementById('modalGenre').textContent = b.genre;
+        document.getElementById('modalPrice').textContent = 'Rp ' + b.price.toLocaleString('id-ID');
+        document.getElementById('modalDesc').textContent = b.desc;
+        document.getElementById('qtyNum').textContent = 1;
+        detailModal.show();
+      }
+
+      document.getElementById('qtyMinus').addEventListener('click', () => {
+        if (modalQty > 1) { modalQty--; document.getElementById('qtyNum').textContent = modalQty; }
+      });
+      document.getElementById('qtyPlus').addEventListener('click', () => {
+        modalQty++; document.getElementById('qtyNum').textContent = modalQty;
+      });
+      document.getElementById('modalAddCart').addEventListener('click', () => {
+        if (currentModalId) {
+          addToCart(currentModalId, modalQty, null);
+          detailModal.hide();
+          setTimeout(openCart, 350);
+        }
+      });
+
+      // ── CHECKOUT: ALAMAT + PEMBAYARAN ──
+      const checkoutModalEl = document.getElementById('checkoutModal');
+      const checkoutModal = new bootstrap.Modal(checkoutModalEl);
+      let selectedPayment = null;
+
+      const paymentInfo = {
+        seabank: {
+          label: 'SeaBank',
+          detail: `Transfer ke rekening <strong>SeaBank 901234567890</strong> a.n. <strong>DESIRE.co</strong> <button class="copy-btn" onclick="copyText('901234567890')">Salin</button><br>Setelah transfer, klik "Konfirmasi &amp; Bayar Sekarang".`
+        },
+        dana: {
+          label: 'DANA',
+          detail: `Kirim ke nomor DANA <strong>0812-3456-7890</strong> a.n. <strong>DESIRE.co</strong> <button class="copy-btn" onclick="copyText('081234567890')">Salin</button><br>Pastikan nominal sesuai total pesanan.`
+        },
+        gopay: {
+          label: 'GoPay',
+          detail: `Kirim ke nomor GoPay <strong>0812-3456-7890</strong> a.n. <strong>DESIRE.co</strong> <button class="copy-btn" onclick="copyText('081234567890')">Salin</button><br>Pastikan nominal sesuai total pesanan.`
+        },
+        cod: {
+          label: 'COD (Bayar di Tempat)',
+          detail: `Pembayaran dilakukan secara tunai langsung kepada kurir saat paket diterima di alamatmu.`
+        }
+      };
+
+      function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => showToast('Nomor disalin: ' + text));
+      }
+
+      // buka modal checkout dari cart panel
+      document.getElementById('btnCheckout').addEventListener('click', () => {
+        if (cart.length === 0) return;
+        resetCheckoutForm();
+        renderCheckoutSummary();
+        closeCart();
+        checkoutModal.show();
+      });
+
+      function resetCheckoutForm() {
+        document.getElementById('checkoutFormStep').style.display = 'block';
+        document.getElementById('checkoutProcessStep').style.display = 'none';
+        document.getElementById('checkoutSuccessStep').style.display = 'none';
+        document.getElementById('checkoutError').classList.remove('show');
+        selectedPayment = null;
+        document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+        document.getElementById('paymentDetailBox').classList.remove('show');
+        document.getElementById('paymentDetailBox').innerHTML = '';
+      }
+
+      function renderCheckoutSummary() {
+        const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+        const box = document.getElementById('checkoutSummary');
+        let rows = cart.map(c => `
+          <div class="checkout-summary-row"><span>${c.name} x${c.qty}</span><span>Rp ${(c.price*c.qty).toLocaleString('id-ID')}</span></div>
+        `).join('');
+        rows += `<div class="checkout-summary-row total"><span>Total</span><span>Rp ${total.toLocaleString('id-ID')}</span></div>`;
+        box.innerHTML = rows;
+      }
+
+      // pilih metode pembayaran
+      document.getElementById('paymentMethods').addEventListener('click', (e) => {
+        const card = e.target.closest('.payment-card');
+        if (!card) return;
+        document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedPayment = card.dataset.method;
+        const box = document.getElementById('paymentDetailBox');
+        box.innerHTML = paymentInfo[selectedPayment].detail;
+        box.classList.add('show');
+      });
+
+      // konfirmasi & simulasi pembayaran
+      document.getElementById('btnConfirmOrder').addEventListener('click', () => {
+        const nama = document.getElementById('inputNama').value.trim();
+        const telepon = document.getElementById('inputTelepon').value.trim();
+        const alamat = document.getElementById('inputAlamat').value.trim();
+        const errEl = document.getElementById('checkoutError');
+
+        if (!nama || !telepon || !alamat || !selectedPayment) {
+          errEl.textContent = !selectedPayment
+            ? 'Mohon pilih metode pembayaran sebelum melanjutkan.'
+            : 'Mohon lengkapi semua data alamat sebelum melanjutkan.';
+          errEl.classList.add('show');
+          return;
+        }
+        errEl.classList.remove('show');
+
+        // tampilkan proses
+        document.getElementById('checkoutFormStep').style.display = 'none';
+        document.getElementById('checkoutProcessStep').style.display = 'block';
+
+        // simulasi delay pembayaran
+        setTimeout(() => {
+          finalizeOrder(nama, telepon, alamat);
+        }, 1800);
+      });
+
+      let lastOrder = null;
+
+      function finalizeOrder(nama, telepon, alamat) {
+        const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+        const orderId = 'DSR-' + Date.now().toString().slice(-8);
+        lastOrder = { orderId, nama, telepon, alamat, method: paymentInfo[selectedPayment].label, items: [...cart], total };
+
+        document.getElementById('checkoutProcessStep').style.display = 'none';
+        document.getElementById('checkoutSuccessStep').style.display = 'block';
+        document.getElementById('successOrderId').textContent = '#' + orderId;
+
+        const itemRows = lastOrder.items.map(it => `
+          <div class="success-box-row"><span>${it.name} x${it.qty}</span><span>Rp ${(it.price*it.qty).toLocaleString('id-ID')}</span></div>
+        `).join('');
+        document.getElementById('successBox').innerHTML = `
+          ${itemRows}
+          <div class="success-box-row"><span>Metode Bayar</span><span>${lastOrder.method}</span></div>
+          <div class="success-box-row"><span>Dikirim ke</span><span>${lastOrder.nama}</span></div>
+          <div class="success-box-row total"><span>Total Dibayar</span><span>Rp ${total.toLocaleString('id-ID')}</span></div>
+        `;
+
+        // kosongkan keranjang setelah pembayaran berhasil
+        cart = [];
+        updateCartUI();
+      }
+
+      document.getElementById('btnSuccessWA').addEventListener('click', () => {
+        if (!lastOrder) return;
+        const lines = lastOrder.items.map(c => `- ${c.name} x${c.qty} = Rp ${(c.price*c.qty).toLocaleString('id-ID')}`).join('\n');
+        const msg = encodeURIComponent(
+          `Halo DESIRE, saya sudah melakukan pembayaran untuk pesanan #${lastOrder.orderId}\n\n` +
+          `Nama: ${lastOrder.nama}\nNo. WA: ${lastOrder.telepon}\nAlamat: ${lastOrder.alamat}\n\n` +
+          `Detail Pesanan:\n${lines}\n\nTotal: Rp ${lastOrder.total.toLocaleString('id-ID')}\nMetode Bayar: ${lastOrder.method}\n\nMohon segera diproses, terima kasih!`
+        );
+        window.open(`https://wa.me/6281234567890?text=${msg}`, '_blank');
+      });
+
+      // ── TOAST ──
+      function showToast(msg) {
+        const t = document.getElementById('toastCart');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+      }
+
+      // ── NAV ──
+      document.getElementById('navToggle').addEventListener('click', () => {
+        document.getElementById('navLinks').classList.toggle('open');
+      });
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+          const target = document.querySelector(a.getAttribute('href'));
+          if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+        });
+      });
+    </script>
+  </body>
+</html>
